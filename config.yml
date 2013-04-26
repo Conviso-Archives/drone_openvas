@@ -1,0 +1,31 @@
+plugin_name: drone
+debug_level: 1
+
+sources: 
+- client: coolerlab
+  project_id: CVS_00001
+  input_directory: input/CVS_00001
+- client: coolerlab
+  project_id: CVS_00002
+  input_directory: input/CVS_00002
+
+
+xmpp:
+  username: drone@coolerlab
+  password: drone1234
+  importer_address: importer@coolerlab
+  send_delay: 0.8
+
+analysis:
+  blacklist:
+    - ISSUE_NAME_HASH
+    - ISSUE_NAME_HASH
+  replace:
+    patternXXX: none
+    patternYYY: patternYYY_replacement
+  template:
+    ISSUE_NAME_HASH: CHECKER_TEMPLATE_ID
+    85af276f187188339e0dad777ef75670: 5
+    2f3e8bdde5d7d6e742e87050c35ce778: 33
+    e0ac625068f4e7ec7a3252628b7b999a: 37
+    da68290d890bd3d8336c9256b8c8d920: 36
