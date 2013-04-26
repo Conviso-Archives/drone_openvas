@@ -2,7 +2,7 @@ require 'libxml'
 
 include LibXML
 
-# Parse::SAX::Arachni
+# Parse::SAX::Openvas
 
 module Parse
   module SAX

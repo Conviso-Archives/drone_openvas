@@ -1,7 +1,7 @@
 
 module Parse
   module WRITER
-    class Arachni
+    class Openvas
     @@file=0
 
      def initialize(x)

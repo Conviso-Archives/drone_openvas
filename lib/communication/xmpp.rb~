@@ -48,7 +48,7 @@ module Communication
 
       xml.scan do |s|
         s.header do |h|
-          h.tool 'arachni'
+          h.tool 'openvas'
           h.scope config['client']
           h.project config['project_id']
           h.timestamp Time.now

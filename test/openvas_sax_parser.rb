@@ -11,12 +11,14 @@ xml_files.each do |f|
   struct = parse.parse_file(f)
   t_stop = Time.now.tv_sec
 
-  puts struct[:results].first[:affected_component]
-  puts "Was found [#{struct[:results].size}] results"
+  struct[:issues].each{|i|
+    puts i[:name]
+  }
+
+  puts "Was found [#{struct[:issues].size}] issues"
   puts "This file has [#{File.size(f)/1000.0}] KB"
   puts "The parser toke [#{t_stop - t_start}] seconds"
   puts "\n\n"
-  puts struct.inspect
 end
 
 total_time_stop = Time.now.tv_sec

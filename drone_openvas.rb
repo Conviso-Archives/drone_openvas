@@ -16,17 +16,19 @@ require File.join(LIB_PATH, 'communication/xmpp')
 require File.join(LIB_PATH, 'output/debug')
 
 
-debug = Output::Debug.new()
-debug.info('Intializing OpenVas Drone ...')
 
 # PARSING DO ARQUIVO DE CONFIGURACAO
 if !File.exists?(CONFIG_FILE)
-  debug.error('Configuration file is missing.')
+  puts('Configuration file is missing.')
   exit
 end
 
 configuration = YAML.load_file(CONFIG_FILE)
+
+debug = Output::Debug.new(configuration)
 Output::Debug::level = configuration['debug_level'].to_i || 0
+
+debug.info('Intializing Arachni Drone ...')
 
 analysis_modules = []
 Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
@@ -58,7 +60,13 @@ module Drone
         @config['sources'].each do |s|
 	        xml_files = __scan_input_directory(s)
 	        xml_files.each do |xml_file|
-	          openvas_structure = __parse_file(xml_file)
+            begin
+	            openvas_structure = __parse_file(xml_file)
+            rescue Exception => e
+              @debug.error("Error parsing XML file: [#{xml_file}]")
+              next
+            end
+
 	          # Try to send all vulnerabilities then, if had success, compress and 
 	          # archive the XML file otherwise does not touch the original file
 	          if __sent_structure(openvas_structure,s)
@@ -73,9 +81,9 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-      @analyses.each {|a| openvas_structure[:results] = a.bulk_analyse(openvas_structure[:results])}
+      @analyses.each {|a| openvas_structure[:issues] = a.bulk_analyse(openvas_structure[:issues])}
       
-      response = openvas_structure[:results].collect do |i|
+      response = openvas_structure[:issues].collect do |i|
         @analyses.each {|a| i = a.analyse(i)}
 	      @comm.send_msg(i, source)
       end
@@ -109,8 +117,8 @@ module Drone
 
     def __parse_file (xml_file = '')
       @debug.info("Parsing xml file [#{xml_file}].")
-      openvas_parse = Parse::SAX::openvas.new()
-      openvas_parse.parse_file(xml_file)
+      arachni_parse = Parse::SAX::Openvas.new()
+      arachni_parse.parse_file(xml_file)
     end
     
     def __archive_file (zip_file = '')
