@@ -15,7 +15,7 @@ module Analysis
           new_issues[i[:name]][:affected_component] = [] if new_issues[i[:name]][:affected_component].nil?
           new_issues[i[:name]][:affected_component]  << i[:affected_component]
 
-          new_issues[i[:name]][:_hash] = Digest::SHA1.hexdigest(new_issues[i[:name]][:_hash] + i[:_hash])
+          new_issues[i[:name]][:hash] = Digest::SHA1.hexdigest(new_issues[i[:name]][:hash] + i[:hash])
         end
       end
       
