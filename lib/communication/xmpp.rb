@@ -36,13 +36,6 @@ module Communication
     end
 
     def product_xml(issue, config)
-#      issue[:_hash]
-#      issue[:name]
-#      issue[:description]
-#      issue[:url]
-#      issue[:cwe]
-#      issue[:remedy_guidance]
-#      issue[:cwe_url]
       xml = Builder::XmlMarkup.new( :ident => 2)
       xml.instruct! :xml, :encoding => 'ASCII'
 
