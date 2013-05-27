@@ -1,6 +1,6 @@
 require 'net/smtp'
 
-module Output
+class Output
   class Debug
     @@level = 0
      
