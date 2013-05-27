@@ -47,7 +47,7 @@ module Parse
      vuln.add_element("title")
      vuln.elements["title"].text=x[:name]
      vuln.add_element("description")
-     vuln.elements["description"].text=text_description[1]
+     vuln.elements["description"].text=x[:description]
      vuln.add_element("category")
      vuln.elements["category"].text=x[:family]
      vuln.add_element("impact")
