@@ -28,22 +28,22 @@ configuration = YAML.load_file(CONFIG_FILE)
 debug = Output::Debug.new(configuration)
 Output::Debug::level = configuration['debug_level'].to_i || 0
 
-debug.info('Intializing Arachni Drone ...')
+debug.info('Intializing Openvas Drone ...')
 
-analysis_modules = []
-Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
-  debug.info("Loading analysis module:  [#{a}]")
-  begin 
-    require a
-    a =~ /analysis\/(\w+)_analysis.rb/
-    am = eval("Analysis::#{$1.capitalize}.new()")
-    am.config = configuration['analysis'][$1.downcase]
-    am.debug = debug
-    analysis_modules << am
-  rescue Exception => e
-    debug.error("Error loading analysis module:  [#{a}]")
-  end
-end
+#analysis_modules = []
+#Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
+#  debug.info("Loading analysis module:  [#{a}]")
+#  begin 
+#    require a
+#    a =~ /analysis\/(\w+)_analysis.rb/
+#    am = eval("Analysis::#{$1.capitalize}.new()")
+#    am.config = configuration['analysis'][$1.downcase]
+#    am.debug = debug
+#    analysis_modules << am
+#  rescue Exception => e
+#    debug.error("Error loading analysis module:  [#{a}]")
+#  end
+#end
 
 module Drone
   class Openvas
@@ -70,7 +70,7 @@ module Drone
 	          # Try to send all vulnerabilities then, if had success, compress and 
 	          # archive the XML file otherwise does not touch the original file
 	          if __sent_structure(openvas_structure,s)
-              compressed_file = __compress_file(xml_file)
+             compressed_file = __compress_file(xml_file)
               __archive_file(compressed_file) unless @config['archive_directory'].to_s.empty?
 	          end
 	        end
@@ -81,16 +81,17 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-      @analyses.each {|a| openvas_structure[:issues] = a.bulk_analyse(openvas_structure[:issues])}
+      @comm.send_msg(openvas_structure,source)
+  #    @analyses.each {|a| openvas_structure[:issues] = a.bulk_analyse(openvas_structure[:issues])}
+  #    
+#      response = openvas_structure[:issues].collect do |i|
+#        @analyses.each {|a| i = a.analyse(i)}
+#	      @comm.send_msg(i, source)
+#      end
       
-      response = openvas_structure[:issues].collect do |i|
-        @analyses.each {|a| i = a.analyse(i)}
-	      @comm.send_msg(i, source)
-      end
+ #     response = response + [true]
       
-      response = response + [true]
-      
-      response.inject{|a,b| a & b}
+ #     response.inject{|a,b| a & b}
     end
     
     # TODO Criar classes de excecões para todos esses erros
@@ -140,5 +141,5 @@ module Drone
   end
 end
 
-drone = Drone::Openvas.new(configuration, debug, analysis_modules)
+drone = Drone::Openvas.new(configuration, debug )  #,analysis_modules)
 drone.run
