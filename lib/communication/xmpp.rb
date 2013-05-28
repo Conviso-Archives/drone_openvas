@@ -12,6 +12,8 @@ module Communication
     def initialize(config = nil, debug = nil) # user,pass)
       @config = config
       @debug = debug
+      @msg_queue = []
+      @active=false
       @cl = Jabber::Client.new(Jabber::JID.new(@config['xmpp']['username']))
       @is_connected = false
       __connenct()
@@ -20,10 +22,10 @@ module Communication
     # TODO: Fazer com que esse metodo apenas receba uma string com um payload
     def send_msg(issue = '', config = nil)
       @debug.info('Sending message ...')
-      return true if issue.empty?
-      return false if !@is_connected
+      
+      return false if !self.active?
       begin
-        msg = Jabber::Message.new(@config['xmpp']['importer_address'], product_xml(issue, config))
+        msg = Jabber::Message.new(@config['xmpp']['importer_address'], issue)
         msg.type = :normal
         @cl.send(msg)
       rescue
@@ -68,8 +70,16 @@ module Communication
     def is_connected?
       @is_connected
     end
+    
+    def receive_msg
+      (1..@msg_queue.size).to_a.collect{@msg_queue.pop}.join('_')
+    end
 
-    private
+
+    def active?
+      @active
+    end
+
     def __connenct
       begin
         @cl.connect
