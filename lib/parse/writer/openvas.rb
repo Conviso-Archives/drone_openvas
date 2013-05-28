@@ -17,15 +17,15 @@ module Parse
       end 
     end
 
-   def write_xml(hash)
+   def write_xml(hash, config)
     doc = Document.new
     doc.add_element("scan")
     doc.root.add_element("header")
     header = doc.root.elements[1]
     header.add_element("tool")
-    header.elements["tool"].text = hash[:toolname]
+    header.elements["tool"].text = config['tool_name']
     header.add_element("project")
-    header.elements["project"].text = "nome projeto cadastro checker"
+    header.elements["project"].text = config['project_id']
     header.add_element("timestamp")
     header.elements["timestamp"].text = hash[:scan_start]
     header.add_element("duration")
@@ -35,11 +35,8 @@ module Parse
     hash[:results].each do |x|
      vuln = doc.root.elements[1]
      vuln = Element.new("vulnerability")
-#     new(description="")
      description=""
       description=x[:description]
- #    puts description
- #    puts hash.inspect
 # para pegar valores do description e dividir em solution e reference e description
       if description 
        text_description=[]
@@ -71,11 +68,7 @@ module Parse
  
     doc.root.insert_after("//header",start)
 
-    File.open(@@file, "w") do |file| 
-     file.puts doc
-    end
-
-    doc.root 
+    doc.root.to_s
    end
 
 

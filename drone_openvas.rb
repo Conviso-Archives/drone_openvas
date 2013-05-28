@@ -56,9 +56,10 @@ module Drone
     end
     
     def run
-      if @comm.is_connected?
+      if @comm.active?
         @config['sources'].each do |s|
 	        xml_files = __scan_input_directory(s)
+
 	        xml_files.each do |xml_file|
             begin
 	            openvas_structure = __parse_file(xml_file)
@@ -81,17 +82,14 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-      puts openvas_structure.inspect
-      puts source.inspect
       test = Parse::WRITER::Openvas.new "test.xml"
      # envia via XMPP o XML padrão conviso
-      @comm.send_msg( test.write_xml(openvas_structure) ,source)
+      @comm.send_msg( test.write_xml(openvas_structure, @config) ,source)
         
         if @config['xmpp']['importer_address'] =~ /validator/
           sleep 2
           msg = @comm.receive_msg
           ret = false
-          puts msg
           if msg =~ /[OK]/
             @debug.info('VALIDATOR - THIS MESSAGE IS VALID')
           else
@@ -99,12 +97,11 @@ module Drone
           end
         end
         
-    
+        ret
     end
     
     # TODO Criar classes de excecões para todos esses erros
     def __validate_configuration
-      
       @config['sources'].each do |s|
         if !File.exists?(s['input_directory'].to_s)
 	        @debug.error("Input directory #{s['input_directory']}does not exist.")

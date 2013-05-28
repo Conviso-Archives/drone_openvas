@@ -15,7 +15,7 @@ module Communication
       @msg_queue = []
       @active=false
       @cl = Jabber::Client.new(Jabber::JID.new(@config['xmpp']['username']))
-      @is_connected = false
+      @active = false
       __connenct()
     end
 
@@ -24,6 +24,7 @@ module Communication
       @debug.info('Sending message ...')
       
       return false if !self.active?
+      
       begin
         msg = Jabber::Message.new(@config['xmpp']['importer_address'], issue)
         msg.type = :normal
@@ -55,26 +56,18 @@ module Communication
             v.title Base64.encode64(issue[:name].to_s)
             v.description Base64.encode64("#{issue[:host]} \n\n #{issue[:description]}")
             v.optional do |vo|
-           #   vo.affected_component Base64.encode64(issue[:affected_component])
-           #   vo.control Base64.encode64("#{issue[:remedy_guidance]} \n #{issue[:remedy_code]}")
               vo.reference Base64.encode64(issue[:original_threat].to_s)
               vo.reproduction Base64.encode64("#{issue[:cve]} ")
               vo.exploitability issue[:risk_factor].to_s.downcase
-      #        vo.template_id issue[:template_id].to_s.downcase
             end
           end
         end
       end
     end
 
-    def is_connected?
-      @is_connected
-    end
-    
     def receive_msg
       (1..@msg_queue.size).to_a.collect{@msg_queue.pop}.join('_')
     end
-
 
     def active?
       @active
@@ -85,7 +78,8 @@ module Communication
         @cl.connect
         @cl.auth(@config['xmpp']['password'])
         @cl.send(Jabber::Presence.new.set_type(:available))
-        @is_connected = true
+        @active = 
+        @debug.info('Drone connected.')
       rescue
         @debug.error('Cannot connect to XMPP server. Please check network connection and XMPP credentials.')
       end 
