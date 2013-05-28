@@ -81,17 +81,25 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-      @comm.send_msg(openvas_structure,source)
-  #    @analyses.each {|a| openvas_structure[:issues] = a.bulk_analyse(openvas_structure[:issues])}
-  #    
-#      response = openvas_structure[:issues].collect do |i|
-#        @analyses.each {|a| i = a.analyse(i)}
-#	      @comm.send_msg(i, source)
-#      end
-      
- #     response = response + [true]
-      
- #     response.inject{|a,b| a & b}
+      puts openvas_structure.inspect
+      puts source.inspect
+      test = Parse::WRITER::Openvas.new "test.xml"
+     # envia via XMPP o XML padrão conviso
+      @comm.send_msg( test.write_xml(openvas_structure) ,source)
+        
+        if @config['xmpp']['importer_address'] =~ /validator/
+          sleep 2
+          msg = @comm.receive_msg
+          ret = false
+          puts msg
+          if msg =~ /[OK]/
+            @debug.info('VALIDATOR - THIS MESSAGE IS VALID')
+          else
+            @debug.info('VALIDATOR - THIS MESSAGE IS INVALID')
+          end
+        end
+        
+    
     end
     
     # TODO Criar classes de excecões para todos esses erros
