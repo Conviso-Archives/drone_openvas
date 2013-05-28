@@ -1,35 +1,35 @@
-plugin_name: openvas
-debug_level: 1
-log_file: log/openvas.log
+tool_name: [TOOL_NAME]
+
+# EX: log/tool.log
+log_file: [LOG_FILE_PATH]
 
 sources:
-- client: Conviso
-  project_id: CVS_00001
-  input_directory: input/CVS_00001
-- client: Conviso
-  project_id: CVS_00002
-  input_directory: input/CVS_00002
+- project_id: [CSC_PROJECT_ID]
+  input_directory: [OUTPUT_XML_PATH_FOR_THIS_SCOPE]
+- project_id: [CSC_PROJECT_ID]
+  input_directory: [OUTPUT_XML_PATH_FOR_THIS_SCOPE]
 
 xmpp:
-  username: openvas@bus.conviso.com.br
-  password: openvas_PASSWORD
-  importer_address: importer@bus.conviso.com.br
-  send_delay: 0.8
+  username: [TOOL_CLIENT]@bus.conviso.com.br
+  password: TOOL_XMPP_PASSWORD
+  importer_address: [IMPORTER_ADDRESS]
 
+# ENABLE DRONE NOTIFICATION SYSTEM
 # smtp:
 #   operator:
-#     name: Operator Name
-#     email: oname@conviso.com.br
+#     name: [OPERATOR_NAME]
+#     email: [OPERATOR_EMAIL]
 
+# DEFAULT DRONE PLUGIN CONFIGURATION
 analysis:
-  blacklist:
-    - ISSUE_NAME_HASH
-    - ISSUE_NAME_HASH
-  replace:
+  blacklist: # BLACKLIST A SPECIFIC ISSUE
+    - ISSUE_NAME_MD5_HASH
+    - ISSUE_NAME_MD5_HASH
+  replace: # REPLACE ANY STRING INSIDE AN ISSUE
     patternXXX: none
     patternYYY: patternYYY_replacement
-  template:
-    ISSUE_NAME_HASH: CHECKER_TEMPLATE_ID
+  template: # ASSOCIATE AN ISSUE TO A CSC TEMPLATE
+    ISSUE_NAME_MD5_HASH: CSC_TEMPLATE_ID
     85af276f187188339e0dad777ef75670: 5
     2f3e8bdde5d7d6e742e87050c35ce778: 33
     e0ac625068f4e7ec7a3252628b7b999a: 37
