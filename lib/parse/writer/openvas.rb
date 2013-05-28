@@ -32,16 +32,21 @@ module Parse
     header.elements["duration"].text = hash[:scan_end]
    #vulnerabilidades
     start = Element.new("vulnerabilities")
-    hash[:issues].each do |x|
+    hash[:results].each do |x|
      vuln = doc.root.elements[1]
      vuln = Element.new("vulnerability")
 #     new(description="")
+     description=""
       description=x[:description]
  #    puts description
  #    puts hash.inspect
 # para pegar valores do description e dividir em solution e reference e description
-     text_description=[]
-     text_description=description.split(/\n\n/,5)
+      if description 
+       text_description=[]
+       text_description=description.split(/\n\n/,5)
+      else
+       text_description=""
+      end
 #fazendo o xml
      vuln.add_attribute("id", x[:hash])
      vuln.add_element("title")
@@ -68,7 +73,9 @@ module Parse
 
     File.open(@@file, "w") do |file| 
      file.puts doc
-    end 
+    end
+
+    doc.root 
    end
 
 
