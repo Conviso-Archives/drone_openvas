@@ -82,9 +82,15 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-      test = Parse::WRITER::Openvas.new "test.xml"
-     # envia via XMPP o XML padrão conviso
-      @comm.send_msg( test.write_xml(openvas_structure, @config) ,source)
+     
+     # test = Parse::WRITER::Openvas.new "test.xml"
+     # @comm.send_msg( test.write_xml(openvas_structure, @config) ,source)
+        
+       response = openvas_structure[:results].collect do |issue|
+        
+        # SEND THE MSG WITH THE ISSUE
+        source['tool_name'] = @config['tool_name']
+        ret = @comm.send_msg(Parse::Writer::Conviso.build_xml(issue, source))
         
         if @config['xmpp']['importer_address'] =~ /validator/
           sleep 2
@@ -98,6 +104,7 @@ module Drone
         end
         
         ret
+       end
     end
     
     # TODO Criar classes de excecões para todos esses erros
