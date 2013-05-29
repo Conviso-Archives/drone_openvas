@@ -88,6 +88,7 @@ module Drone
         
        response = openvas_structure[:results].collect do |issue|
         
+        issue[:duration] = openvas_structure[:duration]
         # SEND THE MSG WITH THE ISSUE
         source['tool_name'] = @config['tool_name']
         ret = @comm.send_msg(Parse::Writer::Conviso.build_xml(issue, source))
