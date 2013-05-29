@@ -16,6 +16,13 @@ module Communication
       @active=false
       @cl = Jabber::Client.new(Jabber::JID.new(@config['xmpp']['username']))
       @active = false
+
+      @cl.add_message_callback do |m|
+        if m.type != :error && m.body.to_s.size > 1
+          @msg_queue << m.body
+        end
+      end
+      
       __connenct()
     end
 

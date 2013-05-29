@@ -1,4 +1,3 @@
-
 require 'base64'
 require 'builder'
 
@@ -6,8 +5,8 @@ module Parse
   module Writer
     class Conviso
       def self.build_xml(issue, config)
-        xml = Builder::XmlMarkup.new( :ident => 2)
-        xml.instruct! :xml, :encoding => 'ASCII'
+        xml = Builder::XmlMarkup.new(:ident => 2)
+        xml.instruct! :xml, :encoding => 'UTF-8'
 
         xml.scan do |s|
           s.header do |h|
@@ -21,8 +20,8 @@ module Parse
           s.vulnerabilities do |vs|
             vs.vulnerability('id' => issue['hash'] ) do |v|
               v.hash issue['hash']
-              v.title issue[:name]
-              v.description issue[:description]
+              v.title Base64.encode64(issue[:name].to_s)
+              v.description Base64.encode64(issue[:description].to_s)
             end # vulnerability
           end # vulnerabilities
         end # scan
