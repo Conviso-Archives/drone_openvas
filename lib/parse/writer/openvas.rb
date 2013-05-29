@@ -11,14 +11,15 @@ module Parse
 
         xml.scan do |s|
           s.header do |h|
-            h.tool config['tool_name']
+            h.tool "OpenVAS"
             h.scope config['client']
             h.project config['project_id']
             h.timestamp Time.now
           end
 
+          
           s.vulnerabilities do |vs|
-            vs.vulnerability do |v|
+            vs.vulnerability('id' => issue['hash'] ) do |v|
               v.hash issue['hash']
               v.title issue[:name]
               v.description issue[:description]
