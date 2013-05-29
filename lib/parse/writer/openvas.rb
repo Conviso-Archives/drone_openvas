@@ -13,6 +13,7 @@ module Parse
             h.tool "OpenVAS"
             h.scope config['client']
             h.project config['project_id']
+            h.duration issue[:duration].to_s
             h.timestamp Time.now
           end
 
@@ -22,6 +23,16 @@ module Parse
               v.hash issue['hash']
               v.title Base64.encode64(issue[:name].to_s)
               v.description Base64.encode64(issue[:description].to_s)
+             
+              v.optional do |vo|
+                vo.impact issue[:risk_factor].to_s.downcase
+                vo.affected_component Base64.encode64(issue[:name].to_s)
+                vo.control Base64.encode64(issue[:description].to_s)
+                vo.reference Base64.encode64(issue[:description].to_s)
+                vo.reproduction Base64.encode64(issue[:cve].to_s)
+                vo.exploitability issue[:risk_factor].to_s.downcase
+          #      vo.template_id issue[:template_id].to_s.downcase
+              end # optional
             end # vulnerability
           end # vulnerabilities
         end # scan
@@ -31,6 +42,5 @@ module Parse
     end
   end
 end
-
 
 
