@@ -11,7 +11,7 @@ CONFIG_FILE = File.join(PATH, 'config.yml')
 
 require File.join(LIB_PATH, 'parse/sax/openvas')
 require File.join(LIB_PATH, 'parse/dom/openvas')
-require File.join(LIB_PATH, 'parse/writer/openvas')
+require File.join(LIB_PATH, 'parse/writer/conviso')
 require File.join(LIB_PATH, 'communication/xmpp')
 require File.join(LIB_PATH, 'output/debug')
 
