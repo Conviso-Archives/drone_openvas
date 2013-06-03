@@ -9,13 +9,15 @@ module Analysis
         if new_issues[i[:name]].nil?
           new_issues[i[:name]] = i
           new_issues[i[:name]][:affected_component] = [new_issues[i[:name]][:affected_component]]
-        else
+        else  
           @debug.info('Aggregating issue ...')
-          new_issues[i[:name]][:url] += "\n#{i[:url]}"
+  #        new_issues[i[:name]][:url] += "\n#{i[:url]}"
           new_issues[i[:name]][:affected_component] = [] if new_issues[i[:name]][:affected_component].nil?
           new_issues[i[:name]][:affected_component]  << i[:affected_component]
-
-          new_issues[i[:name]][:hash] = Digest::SHA1.hexdigest(new_issues[i[:name]][:hash] + i[:hash])
+          strhash = ""
+          strhash << new_issues[i[:name]][:hash].to_s
+          strhash << i[:hash].to_s
+          new_issues[i[:name]][:hash] = Digest::SHA1.hexdigest(strhash)
         end
       end
       
