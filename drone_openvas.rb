@@ -16,7 +16,6 @@ require File.join(LIB_PATH, 'communication/xmpp')
 require File.join(LIB_PATH, 'output/debug')
 
 
-
 # PARSING DO ARQUIVO DE CONFIGURACAO
 if !File.exists?(CONFIG_FILE)
   puts('Configuration file is missing.')
@@ -30,20 +29,24 @@ Output::Debug::level = configuration['debug_level'].to_i || 0
 
 debug.info('Intializing Openvas Drone ...')
 
-#analysis_modules = []
-#Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
-#  debug.info("Loading analysis module:  [#{a}]")
-#  begin 
-#    require a
-#    a =~ /analysis\/(\w+)_analysis.rb/
-#    am = eval("Analysis::#{$1.capitalize}.new()")
-#    am.config = configuration['analysis'][$1.downcase]
-#    am.debug = debug
-#    analysis_modules << am
-#  rescue Exception => e
-#    debug.error("Error loading analysis module:  [#{a}]")
-#  end
-#end
+# load analysis mode
+analysis_modules = []
+Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
+  debug.info("Loading analysis module:  [#{a}]")
+  begin 
+    require a
+    a =~ /analysis\/(\w+)_analysis.rb/
+    am = eval("Analysis::#{$1.capitalize}.new()")
+    am.config = configuration['analysis'][$1.downcase]
+    am.debug = debug
+    analysis_modules << am
+  rescue Exception => e
+    debug.error("Error loading analysis module:  [#{a}]")
+  end
+end
+
+
+
 
 module Drone
   class Openvas
@@ -82,17 +85,18 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-     
-     # test = Parse::WRITER::Openvas.new "test.xml"
-     # @comm.send_msg( test.write_xml(openvas_structure, @config) ,source)
-        
+       
+       @analyses.each {|a| openvas_structure[:results] = a.bulk_analyse(openvas_structure[:results])}
+
        response = openvas_structure[:results].collect do |issue|
-        
+        @analyses.each {|a| issue = a.analyse(issue)}
+        puts "erro2"
         issue[:duration] = openvas_structure[:duration]
         # SEND THE MSG WITH THE ISSUE
         source['tool_name'] = @config['tool_name']
         ret = @comm.send_msg(Parse::Writer::Conviso.build_xml(issue, source))
-        
+                
+
         if @config['xmpp']['importer_address'] =~ /validator/
           sleep 2
           msg = @comm.receive_msg
@@ -105,7 +109,13 @@ module Drone
         end
         
         ret
-       end
+       end 
+
+
+# JUST IN CASE THE RESPONSE ARRAY COMES EMPTY
+       response = response + [true]            
+# IF ALL ISSUES WERE SUCCESSFULLY SENT TO THE SERVER RETURN TRUE
+       response.inject{|a,b| a & b}
     end
     
     # TODO Criar classes de excecões para todos esses erros
@@ -154,5 +164,5 @@ module Drone
   end
 end
 
-drone = Drone::Openvas.new(configuration, debug )  #,analysis_modules)
+drone = Drone::Openvas.new(configuration, debug ,analysis_modules)
 drone.run
