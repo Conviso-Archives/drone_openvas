@@ -15,8 +15,6 @@ require File.join(LIB_PATH, 'parse/writer/conviso')
 require File.join(LIB_PATH, 'communication/xmpp')
 require File.join(LIB_PATH, 'output/debug')
 
-
-# PARSING DO ARQUIVO DE CONFIGURACAO
 if !File.exists?(CONFIG_FILE)
   puts('Configuration file is missing.')
   exit
@@ -29,7 +27,6 @@ Output::Debug::level = configuration['debug_level'].to_i || 0
 
 debug.info('Intializing Openvas Drone ...')
 
-# load analysis mode
 analysis_modules = []
 Dir.glob(File.join(LIB_PATH, 'analysis/*_analysis.rb')).each do |a| 
   debug.info("Loading analysis module:  [#{a}]")
@@ -71,8 +68,7 @@ module Drone
               next
             end
 
-	          # Try to send all vulnerabilities then, if had success, compress and 
-	          # archive the XML file otherwise does not touch the original file
+
 	          if __sent_structure(openvas_structure,s)
              compressed_file = __compress_file(xml_file)
               __archive_file(compressed_file) unless @config['archive_directory'].to_s.empty?
@@ -92,7 +88,7 @@ module Drone
         @analyses.each {|a| issue = a.analyse(issue)}
         puts "erro2"
         issue[:duration] = openvas_structure[:duration]
-        # SEND THE MSG WITH THE ISSUE
+
         source['tool_name'] = @config['tool_name']
         ret = @comm.send_msg(Parse::Writer::Conviso.build_xml(issue, source))
                 
@@ -111,14 +107,11 @@ module Drone
         ret
        end 
 
-
-# JUST IN CASE THE RESPONSE ARRAY COMES EMPTY
        response = response + [true]            
-# IF ALL ISSUES WERE SUCCESSFULLY SENT TO THE SERVER RETURN TRUE
+
        response.inject{|a,b| a & b}
     end
     
-    # TODO Criar classes de excecões para todos esses erros
     def __validate_configuration
       @config['sources'].each do |s|
         if !File.exists?(s['input_directory'].to_s)
