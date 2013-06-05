@@ -19,8 +19,8 @@ module Parse
 
           
           s.vulnerabilities do |vs|
-            vs.vulnerability('id' => issue['hash'] ) do |v|
-              v.hash issue['hash']
+            vs.vulnerability('id' => issue['_hash'] ) do |v|
+              v.hash issue['_hash']
               v.title Base64.encode64(issue[:name].to_s)
               v.description Base64.encode64(issue[:description].to_s)
              
@@ -31,7 +31,7 @@ module Parse
                 vo.reference Base64.encode64(issue[:description].to_s)
                 vo.reproduction Base64.encode64(issue[:cve].to_s)
                 vo.exploitability issue[:risk_factor].to_s.downcase
-          #      vo.template_id issue[:template_id].to_s.downcase
+                vo.template_id issue[:template_id].to_s.downcase
               end # optional
             end # vulnerability
           end # vulnerabilities

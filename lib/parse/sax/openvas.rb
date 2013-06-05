@@ -31,7 +31,7 @@ module Parse
           i[:affected_component] = "#{ i[:name] } \n"
         end
         @struct = {}
-        @struct[:results] = @results
+        @struct[:issues] = @results
         @struct[:duration] = @header[:scan_end]
         @struct[:start_datetime] = @header[:scan_start]
         @struct[:toolname] = "OpenVAS"
@@ -41,7 +41,7 @@ module Parse
         if element == 'result'
           @in_result = true
           @result = {}
-          @result['hash'] = attributes['id']
+          @result['_hash'] = attributes['id']
         end
 
         if element == 'reference'

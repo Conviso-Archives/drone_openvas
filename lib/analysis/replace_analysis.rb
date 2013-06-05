@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'interface')
 
 module Analysis
-  class Replace < Analysis::Interface
+  class Replace < Analysis::Interface::Individual
 
     def analyse(issue = nil)
       @config.select{|k,v| v == 'none'}.each {|k,v| @config[k] = ''}

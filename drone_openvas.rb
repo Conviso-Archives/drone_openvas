@@ -68,7 +68,6 @@ module Drone
               next
             end
 
-
 	          if __sent_structure(openvas_structure,s)
              compressed_file = __compress_file(xml_file)
               __archive_file(compressed_file) unless @config['archive_directory'].to_s.empty?
@@ -81,17 +80,16 @@ module Drone
     
     private
     def __sent_structure(openvas_structure, source)
-       
-       @analyses.each {|a| openvas_structure[:results] = a.bulk_analyse(openvas_structure[:results])}
+      @analyses.select {|a| a.class.superclass == Analysis::Interface::Bulk}.each {|a| openvas_structure[:issues] = a._analyse(openvas_structure[:issues])}
 
-       response = openvas_structure[:results].collect do |issue|
-        @analyses.each {|a| issue = a.analyse(issue)}
-        puts "erro2"
+      response = openvas_structure[:issues].collect do |issue|
+        @analyses.select {|a| !a.class.superclass == Analysis::Interface::Individual}.each {|a| issue = a._analyse(issue)}
+
         issue[:duration] = openvas_structure[:duration]
 
         source['tool_name'] = @config['tool_name']
         ret = @comm.send_msg(Parse::Writer::Conviso.build_xml(issue, source))
-                
+        sleep 2
 
         if @config['xmpp']['importer_address'] =~ /validator/
           sleep 2

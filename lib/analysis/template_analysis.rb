@@ -2,8 +2,7 @@ require File.join(File.dirname(__FILE__), 'interface')
 require 'digest/md5'
 
 module Analysis
-  class Template < Analysis::Interface
-
+  class Template < Analysis::Interface::Individual
     def analyse(issue = nil)
       @config.keys.each do |k|
         if Digest::MD5.hexdigest(issue[:name]) =~ /#{k}/i

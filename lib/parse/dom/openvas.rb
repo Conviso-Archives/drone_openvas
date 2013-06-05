@@ -22,7 +22,7 @@ module Parse
       def __extract_xml()
         begin
           output = {}
-          output[:results] = []
+          output[:issues] = []
           output[:duration]=[]
           output[:start_datetime]=[]
           output[:toolname]=[]
@@ -32,9 +32,9 @@ module Parse
           start=$rows.elements['//report/scan_start'].text.to_s
 
           path="//report/results/result"
-          output[:results] = $rows.elements.collect(path) do |row|  
+          output[:issues] = $rows.elements.collect(path) do |row|  
             {
-              :hash => row.attributes['id'],
+              :_hash => row.attributes['id'],
 # o que tiver dentro da tag nvt/*
               :name => row.elements['nvt/name'].text.to_s,
 #o que tiver dentro da tag result
@@ -54,7 +54,7 @@ module Parse
 
 
           # eliminando repetidos
-          output[:results].uniq!
+          output[:issues].uniq!
        
         rescue Exception => e
           raise Exception.new 'XML with invalid format'
