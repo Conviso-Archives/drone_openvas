@@ -34,24 +34,24 @@ module Parse
                
               test.each { |tmp|
             	 if tmp.match('Solution:')
-  		          counter=1
- 		           end
+  		  counter=1
+ 		 end
  
-          		 if tmp.match('References:')
-  		          counter=2
- 		           end
+                 if tmp.match('References:')
+  	          counter=2
+                 end
 
- 		           if counter == 0
-  		          description << tmp + "\n"
-		           end
+                 if counter == 0
+  	          description << tmp + "\n"
+                 end
 
- 		           if counter == 1 
-                solution << tmp + "\n"
- 		           end
+                 if counter == 1 
+                  solution << tmp + "\n"
+                 end
 
- 		           if counter == 2
-                references << tmp + "\n"
-               end
+                 if counter == 2
+                  references << tmp + "\n"
+                 end
               }
               v.description Base64.encode64(description.to_s)
        
