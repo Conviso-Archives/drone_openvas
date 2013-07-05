@@ -12,7 +12,7 @@ module Parse
           s.header do |h|
             h.tool "OpenVAS"
             h.scope config['client']
-            h.project config['project_id']
+            h.project config['project_id'].to_s
             h.duration issue[:duration].to_s
             h.timestamp Time.now
           end
@@ -23,35 +23,38 @@ module Parse
               v.hash issue['_hash']
               issue[:name] << " - Host: "+ issue[:host].to_s
               v.title Base64.encode64(issue[:name].to_s)
-              tmp=""
-              tmp=issue[:description].to_s
-              test=tmp.split("\n")
+              tmp2=""
+              tmp2=issue[:description].to_s
+              test=tmp2.split("\n")
               solution=""
               references=""
               description=""
               counter=0
                
               test.each { |tmp|
-               if tmp.match('Solution:')
-  		          counter=1
+                           if tmp.match('Solution:')
+  		            counter=1
  		           end
  
-          		 if tmp.match('References:')
-  		          counter=2
+          		   if tmp.match('References:')
+  		            counter=2
  		           end
 
  		           if counter == 0
-  		          description << tmp + "\n"
+  		            description << tmp + "\n"
 		           end
 
  		           if counter == 1 
-                solution << tmp + "\n"
+                            solution << tmp + "\n"
+                            
  		           end
 
  		           if counter == 2
-                references << tmp + "\n"
-               end
+                            references << tmp + "\n"
+                            
+                           end
               }
+              
               v.description Base64.encode64(description.to_s)
        
               v.optional do |vo|
@@ -72,4 +75,3 @@ module Parse
     end
   end
 end
-
