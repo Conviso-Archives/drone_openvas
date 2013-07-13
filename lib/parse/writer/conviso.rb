@@ -25,6 +25,8 @@ module Parse
               v.title Base64.encode64(issue[:name].to_s)
               tmp2=""
               tmp2=issue[:description].to_s
+              tmp2.gsub( /Solution :/, "\nSolution :")
+
               test=tmp2.split("\n")
               solution=""
               references=""
@@ -55,6 +57,23 @@ module Parse
                            end
               }
               
+              solution=solution.gsub( /Solution:|Solution :/, " ")
+              references=references.gsub( /References:|References :/, " ")
+              description=description.gsub( /Overview:|Overview :/, " ")
+
+              if description.empty? 
+               description="Information N/A"
+              end
+
+              if references.empty? 
+               references="Information N/A"
+              end
+
+              if solution.empty? 
+               solution="Information N/A"
+              end
+
+
               v.description Base64.encode64(description.to_s)
        
               v.optional do |vo|
