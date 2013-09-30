@@ -99,7 +99,7 @@ module Drone
       @analyses.select {|a| a.class.superclass == Analysis::Interface::Bulk}.each {|a| openvas_structure[:issues] = a._analyse(openvas_structure[:issues])}
 
       response = openvas_structure[:issues].collect do |issue|
-        @analyses.select {|a| !a.class.superclass == Analysis::Interface::Individual}.each {|a| issue = a._analyse(issue)}
+        @analyses.select {|a| a.class.superclass == Analysis::Interface::Individual}.each {|a| issue = a._analyse(issue)}
 
         issue[:duration] = openvas_structure[:duration]
 
